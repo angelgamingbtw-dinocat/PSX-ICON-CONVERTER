@@ -202,7 +202,6 @@
         
         <div class="upload-area" id="uploadArea">
             <div class="upload-text">Drop an image here or click to select</div>
-            <small>Supports JPG, PNG, GIF formats</small>
             <input type="file" id="fileInput" class="file-input" accept="image/*">
         </div>
 
@@ -218,7 +217,7 @@
             </div>
             <div class="processing" id="processingText">Processing your image...</div>
             <button class="download-btn" id="downloadBtn" onclick="downloadImage()" style="display: none;">
-                Download Processed Image
+                Download Image
             </button>
         </div>
     </div>

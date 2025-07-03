@@ -10,7 +10,6 @@
             box-sizing: border-box;
         }
 
-<style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@800&display=swap');
 
     * {
@@ -215,7 +214,7 @@
         <div class="color-selector">
             <div class="color-option black selected" data-color="black" title="Black Overlay"></div>
             <div class="color-option white" data-color="white" title="White Overlay"></div>
-            <div class="color-option hue" data-color="hue" title="Hue Overlay"></div>
+            <div class="color-option hue" data-color="hue" title="Pink Hue"></div>
         </div>
 
         <div class="result-container" id="resultContainer">
@@ -313,88 +312,24 @@
             return gradient;
         }
 
-        function applyHueBlend(ctx, width, height, hueColor) {
-            const imageData = ctx.getImageData(0, 0, width, height);
-            const data = imageData.data;
-            const hueRgb = hexToRgb(hueColor);
-            const hueHsl = rgbToHsl(hueRgb.r, hueRgb.g, hueRgb.b);
+        function applyHueTransform(canvas, ctx, img) {
+            // Create a temporary canvas for the hue transformation
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = img.width;
+            tempCanvas.height = img.height;
             
-            for (let i = 0; i < data.length; i += 4) {
-                const r = data[i];
-                const g = data[i + 1];
-                const b = data[i + 2];
-                const a = data[i + 3];
-                
-                if (a > 0) {
-                    const hsl = rgbToHsl(r, g, b);
-                    const newHsl = { h: hueHsl.h, s: hsl.s, l: hsl.l };
-                    const newRgb = hslToRgb(newHsl.h, newHsl.s, newHsl.l);
-                    
-                    data[i] = newRgb.r;
-                    data[i + 1] = newRgb.g;
-                    data[i + 2] = newRgb.b;
-                }
-            }
+            // Draw the original image to temp canvas
+            tempCtx.drawImage(img, 0, 0);
             
-            ctx.putImageData(imageData, 0, 0);
-        }
-
-        function hexToRgb(hex) {
-            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            return result ? {
-                r: parseInt(result[1], 16),
-                g: parseInt(result[2], 16),
-                b: parseInt(result[3], 16)
-            } : null;
-        }
-
-        function rgbToHsl(r, g, b) {
-            r /= 255; g /= 255; b /= 255;
-            const max = Math.max(r, g, b), min = Math.min(r, g, b);
-            let h, s, l = (max + min) / 2;
+            // Apply the CSS filter transformation to match our golden-to-pink conversion
+            tempCtx.filter = 'hue-rotate(-120deg) saturate(1.131) brightness(1)';
             
-            if (max === min) {
-                h = s = 0;
-            } else {
-                const d = max - min;
-                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-                switch (max) {
-                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                    case g: h = (b - r) / d + 2; break;
-                    case b: h = (r - g) / d + 4; break;
-                }
-                h /= 6;
-            }
-            return { h, s, l };
-        }
-
-        function hslToRgb(h, s, l) {
-            let r, g, b;
+            // Draw the filtered image onto itself
+            tempCtx.globalCompositeOperation = 'copy';
+            tempCtx.drawImage(tempCanvas, 0, 0);
             
-            if (s === 0) {
-                r = g = b = l;
-            } else {
-                const hue2rgb = (p, q, t) => {
-                    if (t < 0) t += 1;
-                    if (t > 1) t -= 1;
-                    if (t < 1/6) return p + (q - p) * 6 * t;
-                    if (t < 1/2) return q;
-                    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-                    return p;
-                };
-                
-                const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-                const p = 2 * l - q;
-                r = hue2rgb(p, q, h + 1/3);
-                g = hue2rgb(p, q, h);
-                b = hue2rgb(p, q, h - 1/3);
-            }
-            
-            return {
-                r: Math.round(r * 255),
-                g: Math.round(g * 255),
-                b: Math.round(b * 255)
-            };
+            return tempCanvas;
         }
 
         function processImage(img) {
@@ -415,13 +350,14 @@
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
                 let fillStyle;
-                // --- THIS IS THE MODIFIED LOGIC ---
-                if (selectedColor === 'gradient' || selectedColor === 'hue') {
+                if (selectedColor === 'hue') {
+                    // Use the gradient from the first script
                     fillStyle = createGradientFill(ctx, canvas.width, canvas.height);
                 } else {
                     fillStyle = selectedColor === 'black' ? '#000000' : '#ffffff';
                 }
 
+                // Create outline
                 ctx.save();
                 for (let x = -outlineWidth; x <= outlineWidth; x++) {
                     for (let y = -outlineWidth; y <= outlineWidth; y++) {
@@ -435,17 +371,13 @@
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.restore();
 
+                // Prepare the top layer image (keep the pink hue transformation)
                 let topLayerImage = img;
                 if (selectedColor === 'hue') {
-                    const hueCanvas = document.createElement('canvas');
-                    const hueCtx = hueCanvas.getContext('2d');
-                    hueCanvas.width = img.width;
-                    hueCanvas.height = img.height;
-                    hueCtx.drawImage(img, 0, 0);
-                    applyHueBlend(hueCtx, img.width, img.height, '#fc00ff');
-                    topLayerImage = hueCanvas;
+                    topLayerImage = applyHueTransform(canvas, ctx, img);
                 }
                 
+                // Draw the main image
                 ctx.drawImage(topLayerImage, basePositionX, basePositionY);
                 
                 processingText.style.display = 'none';

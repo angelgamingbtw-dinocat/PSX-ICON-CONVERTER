@@ -22,7 +22,7 @@
         font-family: 'Poppins', sans-serif;
         font-weight: 800;
         color: white;
-        text-shadow: 2px 2px 0px #000000, -2px -2px 0px #000000, 2px -2px 0px #000000, -2px 2px 0px #000000;
+        text-shadow: 1px 1px 0px #000000, -1px -1px 0px #000000, 1px -1px 0px #000000, -1px 1px 0px #000000;
         background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
         min-height: 100vh;
         display: flex;
@@ -41,9 +41,9 @@
             right: 0;
             bottom: 0;
             background-image: url('https://tr.rbxcdn.com/180DAY-63613e0c81a7804328b0f97d13522c1f/420/420/Image/Webp/noFilter');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
+            background-size: 171px 135px;
+            background-position: 0 0;
+            background-repeat: repeat;
             filter: brightness(0) saturate(100%) invert(89%) sepia(3%) saturate(191%) hue-rotate(202deg) brightness(95%) contrast(88%);
             opacity: 0.1;
             z-index: -1;
@@ -62,9 +62,9 @@
         h1 {
             text-align: center;
             color: white;
-            text-shadow: 3px 3px 0px #000000, -3px -3px 0px #000000, 3px -3px 0px #000000, -3px 3px 0px #000000;
+             text-shadow: 3px 3px 3px #000000, -1px -1px 0px #000000, 1px -1px 1px #000000, -1px 1px 0px #000000;
             margin-bottom: 30px;
-            font-size: 2.5em;
+            font-size: 3em;
             font-weight: 800;
         }
 
@@ -91,7 +91,7 @@
 
         .upload-text {
             color: white;
-            text-shadow: 2px 2px 0px #000000, -2px -2px 0px #000000, 2px -2px 0px #000000, -2px 2px 0px #000000;
+            text-shadow: 3px 3px 3px #000000, -1px -1px 0px #000000, 1px -1px 1px #000000, -1px 1px 0px #000000;
             font-size: 1.2em;
             font-weight: 800;
             margin-bottom: 10px;

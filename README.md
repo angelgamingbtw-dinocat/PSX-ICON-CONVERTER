@@ -340,9 +340,9 @@
                 const canvas = outputCanvas;
                 const ctx = canvas.getContext('2d');
                 
-                const outlineWidth = 11;
-                canvas.width = img.width + shiftAmount + outlineWidth * 2;
-                canvas.height = img.height + outlineWidth * 2;
+                const outlineWidth = 15;
+                canvas.width = img.width + shiftAmount + outlineWidth * 1.5;
+                canvas.height = img.height + outlineWidth * 1.5;
                 
                 const basePositionX = outlineWidth + shiftAmount;
                 const basePositionY = outlineWidth;
